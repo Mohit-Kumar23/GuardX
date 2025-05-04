@@ -28,6 +28,8 @@ namespace GuardX
             services.AddSingleton<IIDNConfigService,IDNConfigService>();
             services.AddScoped<IRegistryServices, GxRegistryServices>();
             services.AddScoped<IIdentificationFileService, GxIdentificationFileService>();
+
+            services.AddTransient<Gx_HomeForm>();
         }
     }
 }

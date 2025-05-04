@@ -10,4 +10,12 @@ namespace GuardX.Enums
     {
         OK = 0, ERROR = 1, CANCEL = 2
     }
+
+    public enum ERegistryResults
+    {
+        RegRequired = 0,
+        AlreadyReg = 1,
+        InvalidFormat = 2,
+        NonUniqueName = 3
+    }
 }

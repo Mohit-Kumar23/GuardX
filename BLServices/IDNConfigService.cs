@@ -42,6 +42,7 @@ namespace GuardX.BLServices
             }
             catch (Exception ex)
             {
+                //Log Here
                 retVal = EResult.ERROR;
             }
             return retVal;
@@ -59,14 +60,16 @@ namespace GuardX.BLServices
                     fs.Read(buffer, 0, buffer.Length);
                     string fileContent = Encoding.UTF8.GetString(buffer);
                     idnConfig = JsonSerializer.Deserialize<IDNConfig>(fileContent);
-                    if (idnConfig.AppIdentifier.Equals(Constants.DEFAULT_INIT_APP_IDENTIFIER))
+                    if (!idnConfig.AppIdentifier.Equals(Constants.DEFAULT_INIT_APP_IDENTIFIER))
                     {
+                        //Check for date format also
                         bValue = true;
                     }
                 }
             }
             catch (Exception ex)
             {
+                //Log Here
                 bValue = false;
             }
             return bValue;

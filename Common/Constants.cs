@@ -13,10 +13,12 @@ namespace GuardX.Common
         public static readonly string APP_NAME = "GuardX";
         public static readonly string IDN_FILE_NAME = "guardx_config.idn";
         public static readonly string DEFAULT_INIT_APP_IDENTIFIER = "<Give Unique Name related to this directory>";
-        public static readonly string FILE_CREATED_MESSAGE = "Open {0} in current directory and provide unique name under AppIdentigfier.";
+        public static readonly string FILE_CREATED_MESSAGE = "Open {0} in current directory and provide unique name under AppIdentifier.";
         public static readonly string FILE_CREATED_TITLE = "IDN File Created";
         public static readonly string ERROR = "Error";
         public static readonly string FILE_NON_VALID_FORMAT_MESSAGE = "File {0} is not in correct format. Please provide unique name under AppIdentifier.";
+        public static readonly string INVALID_UNIQUE_NAME = "Provided AppIdentified is not unique and is already used by other GuardX application. Please provide a unique AppIdentifier in {0}";
+        public static readonly string APPLICATION_ERROR = "Application ran into error. Please contact your developer.";
 
     }
 }
