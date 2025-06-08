@@ -42,7 +42,7 @@ namespace GuardX.BLServices
                 }
                 else if (result == EResult.ERROR)
                 {
-
+                    //TODO: On Error, show some message
                 }
             }
             else

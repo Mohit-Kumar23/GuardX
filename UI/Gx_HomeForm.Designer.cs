@@ -86,6 +86,7 @@
             btn_profileSetup.TextAlign = ContentAlignment.BottomCenter;
             btn_profileSetup.TextImageRelation = TextImageRelation.ImageAboveText;
             btn_profileSetup.UseVisualStyleBackColor = true;
+            btn_profileSetup.Click += btn_profileSetup_Click;
             // 
             // btn_deleteProfile
             // 

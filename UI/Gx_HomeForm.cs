@@ -2,6 +2,8 @@ using GuardX.BLServices;
 using GuardX.Common;
 using GuardX.Enums;
 using GuardX.Interfaces;
+using GuardX.UI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GuardX
 {
@@ -10,12 +12,14 @@ namespace GuardX
         private EEnableAction enableActionsFlag = EEnableAction.DisableAll;
         private readonly IIdentificationFileService _identificationFileService;
         private readonly IRegistryServices _registryServices;
-        public Gx_HomeForm(IIdentificationFileService identificationService,IRegistryServices registryServices)
-        {        
+        private readonly IServiceProvider _serviceProvider;
+        public Gx_HomeForm(IServiceProvider serviceProvider, IIdentificationFileService identificationService, IRegistryServices registryServices)
+        {
+            _serviceProvider = serviceProvider;
             _identificationFileService = identificationService;
             _registryServices = registryServices;
             InitializeComponent();
-            init();           
+            init();
         }
 
         private void init()
@@ -26,17 +30,13 @@ namespace GuardX
             {
                 EResult eResult = CheckRegistry();
 
-                if(eResult == EResult.ERROR)
+                if (eResult == EResult.ERROR)
                 {
                     Environment.Exit(0);
                 }
                 else
                 {
-                    UpdateEnableActionFlag(EEnableAction.HideAction, true);
-                    UpdateEnableActionFlag(EEnableAction.UnHideAction, true);
-                    UpdateEnableActionFlag(EEnableAction.ProfileSetup, true);
-                    UpdateEnableActionFlag(EEnableAction.DeleteProfile, true);
-                    UpdateEnableActionFlag(EEnableAction.ForgotPwd, true);
+                    
                 }
             }
             EnableDisableUIControls();
@@ -56,24 +56,56 @@ namespace GuardX
             else if (registryResults == ERegistryResults.RegRequired)
             {
                 EResult result = _registryServices.RegisterApplication();
+
                 if (result == EResult.ERROR)
                 {
                     DialogResult dialogResult = MessageBox.Show(Constants.APPLICATION_ERROR, Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     eResult = EResult.ERROR;
                 }
+                else
+                {
+                    //Disable All buttons except the "Create Profile" Button
+                    UpdateEnableActionFlag(EEnableAction.ProfileSetup, true);
+                    UpdateEnableActionFlag(EEnableAction.HideAction, false);
+                    UpdateEnableActionFlag(EEnableAction.UnHideAction, false);
+                    UpdateEnableActionFlag(EEnableAction.DeleteProfile, false);
+                    UpdateEnableActionFlag(EEnableAction.ForgotPwd, false);
+                }
+
             }
             else if (registryResults == ERegistryResults.InvalidFormat)
             {
                 DialogResult dialogResult = MessageBox.Show(Constants.APPLICATION_ERROR, Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 eResult = EResult.ERROR;
             }
+            else if(registryResults == ERegistryResults.UpdateRequired)
+            {
+                DialogResult dialogResult = MessageBox.Show(Constants.UPDATE_REGX_REQ, Constants.PROFILE_SETUP_REQ_TITLE, MessageBoxButtons.OK);
+
+                //Disable All buttons except the "Create Profile" Button
+                UpdateEnableActionFlag(EEnableAction.ProfileSetup, true);
+                UpdateEnableActionFlag(EEnableAction.HideAction, false);
+                UpdateEnableActionFlag(EEnableAction.UnHideAction, false);
+                UpdateEnableActionFlag(EEnableAction.DeleteProfile, false);
+                UpdateEnableActionFlag(EEnableAction.ForgotPwd, false);
+            }
+
+            if(registryResults == ERegistryResults.AlreadyReg)
+            {
+                //Check for Files Hidden or Not, based on that Disable the buttons. Also Disable ProfileSetup
+                UpdateEnableActionFlag(EEnableAction.ProfileSetup, false);
+                UpdateEnableActionFlag(EEnableAction.HideAction, true);
+                UpdateEnableActionFlag(EEnableAction.UnHideAction, true);
+                UpdateEnableActionFlag(EEnableAction.DeleteProfile, true);
+                UpdateEnableActionFlag(EEnableAction.ForgotPwd, true);
+            }
 
             return eResult;
         }
 
-        private void UpdateEnableActionFlag(EEnableAction flag,bool bCalledToEnable)
+        private void UpdateEnableActionFlag(EEnableAction flag, bool bCalledToEnable)
         {
-            if(bCalledToEnable)
+            if (bCalledToEnable)
             {
                 enableActionsFlag |= flag;
             }
@@ -129,12 +161,18 @@ namespace GuardX
             }
             else
             {
-                btn_hide.Enabled= false;
-                btn_unhide.Enabled= false;
-                btn_profileSetup.Enabled= false;
-                btn_deleteProfile.Enabled= false;
-                btn_forgotPassword.Enabled= false;
+                btn_hide.Enabled = false;
+                btn_unhide.Enabled = false;
+                btn_profileSetup.Enabled = false;
+                btn_deleteProfile.Enabled = false;
+                btn_forgotPassword.Enabled = false;
             }
+        }
+
+        private void btn_profileSetup_Click(object sender, EventArgs e)
+        {
+            var gx_ProfileSetupForm = _serviceProvider.GetRequiredService<Gx_ProfileSetupForm>();
+            gx_ProfileSetupForm.ShowDialog();
         }
     }
 }

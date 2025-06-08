@@ -16,6 +16,7 @@ namespace GuardX.Enums
         RegRequired = 0,
         AlreadyReg = 1,
         InvalidFormat = 2,
-        NonUniqueName = 3
+        NonUniqueName = 3,
+        UpdateRequired = 4
     }
 }

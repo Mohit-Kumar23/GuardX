@@ -42,7 +42,7 @@ namespace GuardX.BLServices
             }
             catch (Exception ex)
             {
-                //Log Here
+                //TODO: Log Here
                 retVal = EResult.ERROR;
             }
             return retVal;
@@ -59,20 +59,39 @@ namespace GuardX.BLServices
                     byte[] buffer = new byte[fs.Length];
                     fs.Read(buffer, 0, buffer.Length);
                     string fileContent = Encoding.UTF8.GetString(buffer);
+                    
                     idnConfig = JsonSerializer.Deserialize<IDNConfig>(fileContent);
-                    if (!idnConfig.AppIdentifier.Equals(Constants.DEFAULT_INIT_APP_IDENTIFIER))
+
+                    if (idnConfig != null && !idnConfig.AppIdentifier.Equals(Constants.DEFAULT_INIT_APP_IDENTIFIER))
                     {
-                        //Check for date format also
-                        bValue = true;
+                        var fileCreationTime = File.GetCreationTime(filePath);
+                        if (idnConfig.CreatedAt.Equals(fileCreationTime.ToString()))
+                        {
+                            bValue = true;
+                        }
+                    }
+                    else
+                    {
+                        //TODO: Print Some message
                     }
                 }
             }
             catch (Exception ex)
             {
-                //Log Here
+                //TODO: Log Here
                 bValue = false;
             }
             return bValue;
+        }
+
+        public string GetsAppIdentifier()
+        {
+            return idnConfig.AppIdentifier;
+        }
+
+        public string GetsCreatedAt()
+        {
+            return idnConfig.CreatedAt;
         }
     }
 }

@@ -12,5 +12,9 @@ namespace GuardX.Interfaces
         public EResult CreateIDNFile(string filePath);
 
         public bool IsValidFormat(string filePath);
+
+        public string GetsAppIdentifier();
+
+        public string GetsCreatedAt();
     }
 }

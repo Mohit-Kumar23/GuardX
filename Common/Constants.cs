@@ -19,6 +19,11 @@ namespace GuardX.Common
         public static readonly string FILE_NON_VALID_FORMAT_MESSAGE = "File {0} is not in correct format. Please provide unique name under AppIdentifier.";
         public static readonly string INVALID_UNIQUE_NAME = "Provided AppIdentified is not unique and is already used by other GuardX application. Please provide a unique AppIdentifier in {0}";
         public static readonly string APPLICATION_ERROR = "Application ran into error. Please contact your developer.";
+        public static readonly string CREATED_AT = "CreatedAt";
+        public static readonly string CIPHER_TEXT = "CipherText";
+        public static readonly string UNIQUE_SENTENCE = "Protected Text";
+        public static readonly string UPDATE_REGX_REQ = "Please setup your profile by clicking \"Profile Setup\" ";
+        public static readonly string PROFILE_SETUP_REQ_TITLE = "Profile Setup Required";
 
     }
 }

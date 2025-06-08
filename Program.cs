@@ -1,5 +1,6 @@
 using GuardX.BLServices;
 using GuardX.Interfaces;
+using GuardX.UI;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GuardX
@@ -25,11 +26,16 @@ namespace GuardX
 
         private static void ConfiguerServices(IServiceCollection services)
         {
+            //Singleton services
             services.AddSingleton<IIDNConfigService,IDNConfigService>();
+
+            //Scoped services
             services.AddScoped<IRegistryServices, GxRegistryServices>();
             services.AddScoped<IIdentificationFileService, GxIdentificationFileService>();
 
+            //Transient services
             services.AddTransient<Gx_HomeForm>();
+            services.AddTransient<Gx_ProfileSetupForm>();
         }
     }
 }
