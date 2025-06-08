@@ -21,7 +21,7 @@ namespace GuardX.BLServices
 
         public ERegistryResults CheckApplicationRegistryAndUniqueness()
         {
-            ERegistryResults eResult = ERegistryResults.AlreadyReg;
+                ERegistryResults eResult = ERegistryResults.AlreadyReg;
 
             applicationSubKey = baseKey.OpenSubKey(GetsApplicationSubKeyaPath());
 
@@ -89,7 +89,7 @@ namespace GuardX.BLServices
 
         }
 
-        private void UpdateRegistryValue(string plainText="Life is great when krishna is with you", string password = "23102000@mmmK")
+        private void UpdateRegistryValue(string plainText="Life is great when krishna is with you", string password = "HiMohit")
         {
             applicationSubKey = baseKey.OpenSubKey(GetsApplicationSubKeyaPath(),writable:true);
             if (applicationSubKey != null)
