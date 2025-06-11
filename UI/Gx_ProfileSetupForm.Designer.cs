@@ -125,6 +125,7 @@
             btn_save.TabIndex = 9;
             btn_save.Text = "Save";
             btn_save.UseVisualStyleBackColor = true;
+            btn_save.Click += btn_save_click;
             // 
             // btn_cancel
             // 
@@ -134,6 +135,7 @@
             btn_cancel.TabIndex = 10;
             btn_cancel.Text = "Cancel";
             btn_cancel.UseVisualStyleBackColor = true;
+            btn_cancel.Click += btn_cancel_click;
             // 
             // Gx_ProfileSetupForm
             // 

@@ -16,5 +16,13 @@ namespace GuardX.Interfaces
         public void UnregisterApplication();
 
         public void RegisterUserDetails();
+
+        public bool IsProfileCreated();
+
+        public String GetProfileName();
+
+        public String GetProfileEmail();
+
+        public EResult CreateProfile(String profileName, String profileEmail);
     }
 }

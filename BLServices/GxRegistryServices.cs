@@ -12,6 +12,7 @@ namespace GuardX.BLServices
         private const string BASE_KEY_PATH = "SOFTWARE";
         private readonly RegistryKey baseKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
         private RegistryKey applicationSubKey;
+        private RegistryKey generalApplicationSubKey;
         private RegistryKey userProfileSubKey;
 
         public GxRegistryServices(IIDNConfigService idnConfigService)
@@ -21,9 +22,9 @@ namespace GuardX.BLServices
 
         public ERegistryResults CheckApplicationRegistryAndUniqueness()
         {
-                ERegistryResults eResult = ERegistryResults.AlreadyReg;
+            ERegistryResults eResult = ERegistryResults.AlreadyReg;
 
-            applicationSubKey = baseKey.OpenSubKey(GetsApplicationSubKeyaPath());
+            applicationSubKey = baseKey.OpenSubKey(GetApplicationSubKeyaPath());
 
             if (applicationSubKey == null)
             {
@@ -51,7 +52,7 @@ namespace GuardX.BLServices
         {
             EResult eResult = EResult.OK;
 
-            applicationSubKey = baseKey.CreateSubKey(GetsApplicationSubKeyaPath());
+            applicationSubKey = baseKey.CreateSubKey(GetApplicationSubKeyaPath());
             if (applicationSubKey != null)
             {
                 applicationSubKey.SetValue(GuardX.Common.Constants.CREATED_AT, _idnConfigService.GetsCreatedAt());
@@ -91,7 +92,7 @@ namespace GuardX.BLServices
 
         private void UpdateRegistryValue(string plainText="Life is great when krishna is with you", string password = "HiMohit")
         {
-            applicationSubKey = baseKey.OpenSubKey(GetsApplicationSubKeyaPath(),writable:true);
+            applicationSubKey = baseKey.OpenSubKey(GetApplicationSubKeyaPath(),writable:true);
             if (applicationSubKey != null)
             {
                 applicationSubKey.SetValue(GuardX.Common.Constants.CIPHER_TEXT, password);
@@ -105,9 +106,14 @@ namespace GuardX.BLServices
             return bRetVal;
         }
 
-        private string GetsApplicationSubKeyaPath()
+        private string GetApplicationSubKeyaPath()
         {
             return BASE_KEY_PATH + "\\" + GuardX.Common.Constants.APP_NAME + "_" + _idnConfigService.GetsAppIdentifier();
+        }
+
+        private string GetApplicationSubKeyaPathOfGeneral()
+        {
+            return BASE_KEY_PATH + "\\" + GuardX.Common.Constants.APP_NAME + "_" + GuardX.Common.Constants.GENERAL;
         }
 
         private bool IsRegistryInCorrectFormat()
@@ -123,6 +129,60 @@ namespace GuardX.BLServices
             }
 
             return bResult;
+        }
+
+        public bool IsProfileCreated()
+        {
+            bool bResult = false;
+
+            if(generalApplicationSubKey == null)
+            {
+                generalApplicationSubKey = baseKey.OpenSubKey(GetApplicationSubKeyaPathOfGeneral());
+                if (generalApplicationSubKey != null)
+                {
+                    bResult = true;
+                }
+            }
+            else
+            {
+                bResult = true;
+            }
+
+            return bResult;
+        }
+
+        public EResult CreateProfile(String profileName, String profileEmail)
+        {
+            EResult eResult = EResult.OK;
+
+            try
+            {
+                generalApplicationSubKey = baseKey.CreateSubKey(GetApplicationSubKeyaPathOfGeneral());
+                if (generalApplicationSubKey != null)
+                {
+                    generalApplicationSubKey.SetValue(GuardX.Common.Constants.PROFILE_NAME, profileName);
+                    generalApplicationSubKey.SetValue(GuardX.Common.Constants.PROFILE_EMAIL,profileEmail);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //TODO: Log Error here
+                eResult = EResult.ERROR;
+            }
+
+            return eResult;
+
+        }
+
+        public string GetProfileName()
+        {
+            return generalApplicationSubKey.GetValue(GuardX.Common.Constants.PROFILE_NAME).ToString();
+        }
+
+        public string GetProfileEmail()
+        {
+            return generalApplicationSubKey.GetValue(GuardX.Common.Constants.PROFILE_EMAIL).ToString();
         }
     }
 }

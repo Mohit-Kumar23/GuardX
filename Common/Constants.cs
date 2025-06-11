@@ -11,6 +11,9 @@ namespace GuardX.Common
     public static class Constants
     {
         public static readonly string APP_NAME = "GuardX";
+        public static readonly string GENERAL = "General";
+        public static readonly string PROFILE_NAME = "Name";
+        public static readonly string PROFILE_EMAIL = "Email";
         public static readonly string IDN_FILE_NAME = "guardx_config.idn";
         public static readonly string DEFAULT_INIT_APP_IDENTIFIER = "<Give Unique Name related to this directory>";
         public static readonly string FILE_CREATED_MESSAGE = "Open {0} in current directory and provide unique name under AppIdentifier.";
@@ -24,6 +27,7 @@ namespace GuardX.Common
         public static readonly string UNIQUE_SENTENCE = "Protected Text";
         public static readonly string UPDATE_REGX_REQ = "Please setup your profile by clicking \"Profile Setup\" ";
         public static readonly string PROFILE_SETUP_REQ_TITLE = "Profile Setup Required";
+        public static readonly string FILL_ALL_FIELDS = "Please fill out all the fields to proceed.";
 
     }
 }
