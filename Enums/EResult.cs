@@ -19,4 +19,12 @@ namespace GuardX.Enums
         NonUniqueName = 3,
         UpdateRequired = 4
     }
+
+    public enum EIDNFileResults
+    {
+        Valid = 0,
+        InvalidIdentifier = 1,
+        CreationTimeEditedError = 2,
+        OtherError = 3
+    }
 }

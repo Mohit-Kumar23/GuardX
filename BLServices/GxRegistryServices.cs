@@ -1,5 +1,6 @@
 ﻿using GuardX.Common;
 using GuardX.Enums;
+using GuardX.Helper;
 using GuardX.Interfaces;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
@@ -13,7 +14,6 @@ namespace GuardX.BLServices
         private readonly RegistryKey baseKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
         private RegistryKey applicationSubKey;
         private RegistryKey generalApplicationSubKey;
-        private RegistryKey userProfileSubKey;
 
         public GxRegistryServices(IIDNConfigService idnConfigService)
         {
@@ -56,6 +56,7 @@ namespace GuardX.BLServices
             if (applicationSubKey != null)
             {
                 applicationSubKey.SetValue(GuardX.Common.Constants.CREATED_AT, _idnConfigService.GetsCreatedAt());
+                applicationSubKey.SetValue(GuardX.Common.Constants.INITIALIZATION_VECTOR, EncryptionDecryptionService.GetIVForAES(), RegistryValueKind.Binary);
                 applicationSubKey.SetValue(GuardX.Common.Constants.UNIQUE_SENTENCE, "");
                 applicationSubKey.SetValue(GuardX.Common.Constants.CIPHER_TEXT, "");
             }
@@ -70,7 +71,7 @@ namespace GuardX.BLServices
 
             if (applicationSubKey != null) 
             {
-                var regCreatedTime = applicationSubKey.GetValue(GuardX.Common.Constants.CREATED_AT).ToString();
+                var regCreatedTime = GetCreateAt();
                 if(regCreatedTime != null && regCreatedTime != "" && regCreatedTime.Equals(_idnConfigService.GetsCreatedAt()))
                 {
                     bResult = true;
@@ -90,14 +91,29 @@ namespace GuardX.BLServices
 
         }
 
-        private void UpdateRegistryValue(string plainText="Life is great when krishna is with you", string password = "HiMohit")
+        private EResult UpdateRegistryValue(string plainText="", string cipherText="")
         {
-            applicationSubKey = baseKey.OpenSubKey(GetApplicationSubKeyaPath(),writable:true);
-            if (applicationSubKey != null)
+            EResult eResult = EResult.OK;
+
+            try
             {
-                applicationSubKey.SetValue(GuardX.Common.Constants.CIPHER_TEXT, password);
-                applicationSubKey.SetValue(GuardX.Common.Constants.UNIQUE_SENTENCE, plainText);
+                if (!String.IsNullOrEmpty(plainText) && !String.IsNullOrEmpty(cipherText))
+                {
+                    applicationSubKey = baseKey.OpenSubKey(GetApplicationSubKeyaPath(), writable: true);
+                    if (applicationSubKey != null)
+                    {
+                        applicationSubKey.SetValue(GuardX.Common.Constants.CIPHER_TEXT, cipherText);
+                        applicationSubKey.SetValue(GuardX.Common.Constants.UNIQUE_SENTENCE, plainText);
+                    }
+                }
             }
+            catch(Exception ex)
+            {
+                //TODO: Log Error here
+                eResult = EResult.ERROR;
+            }
+
+            return eResult;
         }
 
         private bool DoesRegistryKeyExist()
@@ -122,10 +138,11 @@ namespace GuardX.BLServices
             
             if (applicationSubKey != null)
             {
-                if(!String.IsNullOrEmpty(applicationSubKey.GetValue(GuardX.Common.Constants.CIPHER_TEXT).ToString()))
-                    if(!String.IsNullOrEmpty(applicationSubKey.GetValue(GuardX.Common.Constants.UNIQUE_SENTENCE).ToString()))
-                        if(!String.IsNullOrEmpty(applicationSubKey.GetValue(GuardX.Common.Constants.CREATED_AT).ToString()))
-                            bResult = true;
+                if(!String.IsNullOrEmpty(GetCipherText()))
+                    if(!String.IsNullOrEmpty(GetUniqueSentence()))
+                        if(!String.IsNullOrEmpty(GetCreateAt()))
+                            if (GetIV() != null)
+                                bResult = true;
             }
 
             return bResult;
@@ -183,6 +200,39 @@ namespace GuardX.BLServices
         public string GetProfileEmail()
         {
             return generalApplicationSubKey.GetValue(GuardX.Common.Constants.PROFILE_EMAIL).ToString();
+        }
+
+        public EResult UpdateProfile(String profilePwd, String profileUniqueText)
+        {
+            EResult eResult = EResult.ERROR;
+
+            EncryptionDecryptionService.SetIVForAES(GetIV());
+
+            string cipherText = EncryptionDecryptionService.Encrypt(profileUniqueText, profilePwd);
+
+            eResult = UpdateRegistryValue(profileUniqueText, cipherText);
+
+            return eResult;
+        }
+
+        private String GetCreateAt()
+        {
+            return applicationSubKey.GetValue(GuardX.Common.Constants.CREATED_AT).ToString();
+        }
+        
+        private String GetCipherText()
+        {
+            return applicationSubKey.GetValue(GuardX.Common.Constants.CIPHER_TEXT).ToString();
+        }
+        
+        private String GetUniqueSentence()
+        {
+            return applicationSubKey.GetValue(GuardX.Common.Constants.UNIQUE_SENTENCE).ToString();
+        }
+        
+        private byte[] GetIV()
+        {
+            return (byte[])applicationSubKey.GetValue(GuardX.Common.Constants.INITIALIZATION_VECTOR);
         }
     }
 }

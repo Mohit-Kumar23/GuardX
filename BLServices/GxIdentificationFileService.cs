@@ -47,11 +47,24 @@ namespace GuardX.BLServices
             }
             else
             {
-                bool bValidFormat = _idnConfigService.IsValidFormat(filePath);
+                EIDNFileResults eResult = _idnConfigService.IsValidFormat(filePath);
 
-                if (!bValidFormat)
+                if (EIDNFileResults.Valid != eResult)
                 {
-                    DialogResult result = MessageBox.Show(String.Format(Constants.FILE_NON_VALID_FORMAT_MESSAGE, Constants.IDN_FILE_NAME), Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DialogResult result;
+                    if (EIDNFileResults.InvalidIdentifier == eResult)
+                    {
+                        result = MessageBox.Show(String.Format(Constants.FILE_NON_VALID_FORMAT_MESSAGE, Constants.IDN_FILE_NAME), Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else if(EIDNFileResults.CreationTimeEditedError == eResult)
+                    {
+                        result = MessageBox.Show(String.Format(Constants.FILE_CREATION_TIME_EDITED_ERROR, Constants.IDN_FILE_NAME), Constants.ERROR, MessageBoxButtons.OK,MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        result = MessageBox.Show(Constants.APPLICATION_ERROR, Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
                     if (result == DialogResult.OK || result == DialogResult.Cancel)
                     {
                         Environment.Exit(0);

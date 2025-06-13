@@ -48,9 +48,9 @@ namespace GuardX.BLServices
             return retVal;
         }
 
-        public bool IsValidFormat(string filePath)
+        public EIDNFileResults IsValidFormat(string filePath)
         {
-            bool bValue = false;
+            EIDNFileResults eResult = EIDNFileResults.Valid;
 
             try
             {
@@ -62,26 +62,32 @@ namespace GuardX.BLServices
                     
                     idnConfig = JsonSerializer.Deserialize<IDNConfig>(fileContent);
 
-                    if (idnConfig != null && !idnConfig.AppIdentifier.Equals(Constants.DEFAULT_INIT_APP_IDENTIFIER))
+                    if (idnConfig != null)
                     {
-                        var fileCreationTime = File.GetCreationTime(filePath);
-                        if (idnConfig.CreatedAt.Equals(fileCreationTime.ToString()))
+                        if(idnConfig.AppIdentifier.Equals(Constants.DEFAULT_INIT_APP_IDENTIFIER))
                         {
-                            bValue = true;
+                            eResult = EIDNFileResults.InvalidIdentifier;
+                            return eResult;
+                        }
+
+                        var fileCreationTime = File.GetCreationTime(filePath);
+                        if (!idnConfig.CreatedAt.Equals(fileCreationTime.ToString()))
+                        {
+                            eResult = EIDNFileResults.CreationTimeEditedError;
                         }
                     }
                     else
                     {
-                        //TODO: Print Some message
+                        eResult = EIDNFileResults.OtherError;
                     }
                 }
             }
             catch (Exception ex)
             {
                 //TODO: Log Here
-                bValue = false;
+                eResult = EIDNFileResults.OtherError;
             }
-            return bValue;
+            return eResult;
         }
 
         public string GetsAppIdentifier()

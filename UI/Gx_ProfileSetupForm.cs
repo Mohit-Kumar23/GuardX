@@ -49,6 +49,7 @@ namespace GuardX.UI
                 if (result == EResult.OK)
                 {
                     //Encryption Alogrithm to take the password and unique string to store the plain text and cipher text
+                    _registryServices.UpdateProfile(txtBx_pwd.Text, txtBx_uniqueText.Text);
                 }
                 if(result == EResult.OK)
                 {

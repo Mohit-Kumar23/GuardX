@@ -24,5 +24,7 @@ namespace GuardX.Interfaces
         public String GetProfileEmail();
 
         public EResult CreateProfile(String profileName, String profileEmail);
+
+        public EResult UpdateProfile(String profilePwd, String profileUniqueText);
     }
 }

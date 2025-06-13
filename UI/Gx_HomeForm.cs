@@ -94,13 +94,49 @@ namespace GuardX
             {
                 //Check for Files Hidden or Not, based on that Disable the buttons. Also Disable ProfileSetup
                 UpdateEnableActionFlag(EEnableAction.ProfileSetup, false);
-                UpdateEnableActionFlag(EEnableAction.HideAction, true);
-                UpdateEnableActionFlag(EEnableAction.UnHideAction, true);
                 UpdateEnableActionFlag(EEnableAction.DeleteProfile, true);
                 UpdateEnableActionFlag(EEnableAction.ForgotPwd, true);
+                SetHiddenOrUnhiddenFlagAsPerFileVisibility();
             }
 
             return eResult;
+        }
+
+        public void SetHiddenOrUnhiddenFlagAsPerFileVisibility()
+        {
+            String currentDirectory = Directory.GetCurrentDirectory();
+
+            string[] files = Directory.GetFiles(currentDirectory);
+
+            if(files.Length == 2)
+            {
+                foreach(string file in files)
+                {
+                    var fileName = Path.GetFileName(file);
+                    if(fileName.Equals(Constants.APP_NAME_EXE) || fileName.Equals(Constants.IDN_FILE_NAME))
+                    {
+                        UpdateEnableActionFlag(EEnableAction.UnHideAction, true);
+                        UpdateEnableActionFlag(EEnableAction.HideAction, false);
+                    }
+                    else
+                    {
+                        UpdateEnableActionFlag(EEnableAction.ProfileSetup, false);
+                        UpdateEnableActionFlag(EEnableAction.HideAction, false);
+                        UpdateEnableActionFlag(EEnableAction.UnHideAction, false);
+                        UpdateEnableActionFlag(EEnableAction.DeleteProfile, false);
+                        UpdateEnableActionFlag(EEnableAction.ForgotPwd, false);
+
+                        MessageBox.Show(Constants.APPLICATION_ERROR, Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    }
+                }
+            }
+            else
+            {
+                UpdateEnableActionFlag(EEnableAction.HideAction, true);
+                UpdateEnableActionFlag(EEnableAction.UnHideAction, false);
+            }
+
         }
 
         private void UpdateEnableActionFlag(EEnableAction flag, bool bCalledToEnable)
