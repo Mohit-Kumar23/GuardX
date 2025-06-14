@@ -22,10 +22,17 @@ namespace GuardX.BLServices
             _idnConfigService = idnConfigService;
         }
 
+        public EResult DeleteIDNFile()
+        {
+            string currentPath = AppDomain.CurrentDomain.BaseDirectory;
+            string filePath = currentPath + "\\" + Constants.IDN_FILE_NAME;
+            return _idnConfigService.DeleteIDNConfigFile(filePath);
+        }
+
         public bool IsIDNFilePresentOrFormatted()
         {
             bool bRetVal = false;
-            string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string currentPath = AppDomain.CurrentDomain.BaseDirectory;
             string filePath = currentPath + "\\" + Constants.IDN_FILE_NAME;
 
             if (!File.Exists(filePath))
@@ -34,7 +41,7 @@ namespace GuardX.BLServices
 
                 if (result == EResult.OK)
                 {
-                    DialogResult dialogResult = MessageBox.Show(String.Format(Constants.FILE_CREATED_MESSAGE, Constants.IDN_FILE_NAME), Constants.FILE_CREATED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult dialogResult = MessageBox.Show(/*String.Format(Constants.FILE_CREATED_MESSAGE, Constants.IDN_FILE_NAME)*/currentPath, Constants.FILE_CREATED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     if (dialogResult == DialogResult.OK || dialogResult == DialogResult.Cancel)
                     {
                         Environment.Exit(0);

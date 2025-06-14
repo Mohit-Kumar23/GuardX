@@ -99,5 +99,20 @@ namespace GuardX.BLServices
         {
             return idnConfig.CreatedAt;
         }
+
+        public EResult DeleteIDNConfigFile(string filePath)
+        {
+            EResult eResult = EResult.OK;
+            try
+            {
+                File.Delete(filePath);
+            }
+            catch(Exception ex)
+            {
+                //TODO: Log Here
+                eResult = EResult.ERROR;
+            }
+            return eResult;
+        }
     }
 }

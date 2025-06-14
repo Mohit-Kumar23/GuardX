@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Gx_ProfileSetupForm));
             logo_guardx = new PictureBox();
             txtBx_name = new TextBox();
@@ -40,7 +41,10 @@
             lb_uniqueSentence = new Label();
             btn_save = new Button();
             btn_cancel = new Button();
+            btn_verify = new Button();
+            errorProvider = new ErrorProvider(components);
             ((System.ComponentModel.ISupportInitialize)logo_guardx).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
             // logo_guardx
@@ -88,7 +92,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(24, 221);
+            label1.Location = new Point(24, 244);
             label1.Name = "label1";
             label1.Size = new Size(87, 25);
             label1.TabIndex = 5;
@@ -96,14 +100,14 @@
             // 
             // txtBx_pwd
             // 
-            txtBx_pwd.Location = new Point(24, 261);
+            txtBx_pwd.Location = new Point(24, 279);
             txtBx_pwd.Name = "txtBx_pwd";
             txtBx_pwd.Size = new Size(291, 31);
             txtBx_pwd.TabIndex = 6;
             // 
             // txtBx_uniqueText
             // 
-            txtBx_uniqueText.Location = new Point(24, 355);
+            txtBx_uniqueText.Location = new Point(24, 370);
             txtBx_uniqueText.Name = "txtBx_uniqueText";
             txtBx_uniqueText.Size = new Size(473, 31);
             txtBx_uniqueText.TabIndex = 7;
@@ -111,7 +115,7 @@
             // lb_uniqueSentence
             // 
             lb_uniqueSentence.AutoSize = true;
-            lb_uniqueSentence.Location = new Point(23, 327);
+            lb_uniqueSentence.Location = new Point(23, 336);
             lb_uniqueSentence.Name = "lb_uniqueSentence";
             lb_uniqueSentence.Size = new Size(237, 25);
             lb_uniqueSentence.TabIndex = 8;
@@ -137,11 +141,27 @@
             btn_cancel.UseVisualStyleBackColor = true;
             btn_cancel.Click += btn_cancel_click;
             // 
+            // btn_verify
+            // 
+            btn_verify.Location = new Point(22, 187);
+            btn_verify.Name = "btn_verify";
+            btn_verify.Size = new Size(112, 34);
+            btn_verify.TabIndex = 11;
+            btn_verify.Text = "Verify";
+            btn_verify.UseVisualStyleBackColor = true;
+            btn_verify.Click += btn_verify_click;
+            // 
+            // errorProvider
+            // 
+            errorProvider.BlinkStyle = ErrorBlinkStyle.NeverBlink;
+            errorProvider.ContainerControl = this;
+            // 
             // Gx_ProfileSetupForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btn_verify);
             Controls.Add(btn_cancel);
             Controls.Add(btn_save);
             Controls.Add(lb_uniqueSentence);
@@ -153,10 +173,13 @@
             Controls.Add(lb_name);
             Controls.Add(txtBx_name);
             Controls.Add(logo_guardx);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "Gx_ProfileSetupForm";
             Text = "GuardX";
             ((System.ComponentModel.ISupportInitialize)logo_guardx).EndInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -174,5 +197,7 @@
         private Label lb_uniqueSentence;
         private Button btn_save;
         private Button btn_cancel;
+        private Button btn_verify;
+        private ErrorProvider errorProvider;
     }
 }

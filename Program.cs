@@ -32,10 +32,14 @@ namespace GuardX
             //Scoped services
             services.AddScoped<IRegistryServices, GxRegistryServices>();
             services.AddScoped<IIdentificationFileService, GxIdentificationFileService>();
+            services.AddScoped<IVisibilityService, GxVisibilityService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             //Transient services
             services.AddTransient<Gx_HomeForm>();
             services.AddTransient<Gx_ProfileSetupForm>();
+            services.AddTransient<Gx_OtpFrom>();
+            services.AddTransient<Gx_PasswordInputForm>();
         }
     }
 }

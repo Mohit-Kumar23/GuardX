@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GuardX.Helper
+namespace GuardX.Enums
 {
-    public class EmailService
+    public enum EEmailPurpose
     {
+        SetupProfile = 0,
+        ResetProfile = 1
     }
 }

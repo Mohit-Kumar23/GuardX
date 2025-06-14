@@ -7,10 +7,10 @@ using GuardX.Enums;
 
 namespace GuardX.Interfaces
 {
-    public interface IIdentificationFileService
+    public interface IVisibilityService
     {
-        public bool IsIDNFilePresentOrFormatted();
+        public EResult Hide();
 
-        public EResult DeleteIDNFile();
+        public EResult UnHide();
     }
 }

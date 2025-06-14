@@ -16,5 +16,7 @@ namespace GuardX.Interfaces
         public string GetsAppIdentifier();
 
         public string GetsCreatedAt();
+
+        public EResult DeleteIDNConfigFile(string filePath);
     }
 }

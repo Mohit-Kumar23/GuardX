@@ -13,10 +13,6 @@ namespace GuardX.Interfaces
 
         public EResult RegisterApplication();
 
-        public void UnregisterApplication();
-
-        public void RegisterUserDetails();
-
         public bool IsProfileCreated();
 
         public String GetProfileName();
@@ -26,5 +22,12 @@ namespace GuardX.Interfaces
         public EResult CreateProfile(String profileName, String profileEmail);
 
         public EResult UpdateProfile(String profilePwd, String profileUniqueText);
+
+        public EResult ValidatePassword(String password);
+
+        public EResult DeleteDirectoryProfile();
+
+        public String GetUniqueSentence();
+
     }
 }

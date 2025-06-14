@@ -24,6 +24,7 @@ namespace GuardX.BLServices
         {
             ERegistryResults eResult = ERegistryResults.AlreadyReg;
 
+            generalApplicationSubKey = baseKey.OpenSubKey(GetApplicationSubKeyaPathOfGeneral());
             applicationSubKey = baseKey.OpenSubKey(GetApplicationSubKeyaPath());
 
             if (applicationSubKey == null)
@@ -77,18 +78,7 @@ namespace GuardX.BLServices
                     bResult = true;
                 }
             }
-
             return bResult;
-        }
-
-        public void UnregisterApplication()
-        {
-
-        }
-
-        public void RegisterUserDetails()
-        {
-
         }
 
         private EResult UpdateRegistryValue(string plainText="", string cipherText="")
@@ -115,13 +105,6 @@ namespace GuardX.BLServices
 
             return eResult;
         }
-
-        private bool DoesRegistryKeyExist()
-        {
-            bool bRetVal = false;
-            return bRetVal;
-        }
-
         private string GetApplicationSubKeyaPath()
         {
             return BASE_KEY_PATH + "\\" + GuardX.Common.Constants.APP_NAME + "_" + _idnConfigService.GetsAppIdentifier();
@@ -135,14 +118,17 @@ namespace GuardX.BLServices
         private bool IsRegistryInCorrectFormat()
         {
             bool bResult = false;
-            
+
             if (applicationSubKey != null)
             {
-                if(!String.IsNullOrEmpty(GetCipherText()))
-                    if(!String.IsNullOrEmpty(GetUniqueSentence()))
-                        if(!String.IsNullOrEmpty(GetCreateAt()))
+                if (!String.IsNullOrEmpty(GetCipherText()))
+                    if (!String.IsNullOrEmpty(GetUniqueSentence()))
+                        if (!String.IsNullOrEmpty(GetCreateAt()))
                             if (GetIV() != null)
+                            {
                                 bResult = true;
+                                EncryptionDecryptionService.SetIVForAES(GetIV());
+                            }
             }
 
             return bResult;
@@ -225,7 +211,7 @@ namespace GuardX.BLServices
             return applicationSubKey.GetValue(GuardX.Common.Constants.CIPHER_TEXT).ToString();
         }
         
-        private String GetUniqueSentence()
+        public String GetUniqueSentence()
         {
             return applicationSubKey.GetValue(GuardX.Common.Constants.UNIQUE_SENTENCE).ToString();
         }
@@ -233,6 +219,38 @@ namespace GuardX.BLServices
         private byte[] GetIV()
         {
             return (byte[])applicationSubKey.GetValue(GuardX.Common.Constants.INITIALIZATION_VECTOR);
+        }
+
+        public EResult ValidatePassword(string password)
+        {
+            EResult result = EResult.ERROR;
+
+            string protectedText = GetUniqueSentence();
+
+            string decryptedText = EncryptionDecryptionService.Decrypt(GetCipherText(), password);
+
+            if(protectedText.Equals(decryptedText))
+            {
+                result = EResult.OK;
+            }
+
+            return result;
+        }
+
+        public EResult DeleteDirectoryProfile()
+        {
+            EResult eResult = EResult.OK;
+            try
+            {
+                baseKey.DeleteSubKey(GetApplicationSubKeyaPath());
+            }
+            catch (Exception ex)
+            {
+                //TODO: Log Here
+                eResult = EResult.ERROR;
+            }
+
+            return eResult;
         }
     }
 }

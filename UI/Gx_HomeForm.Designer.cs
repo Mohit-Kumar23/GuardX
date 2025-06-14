@@ -52,6 +52,7 @@
             btn_hide.TextAlign = ContentAlignment.BottomCenter;
             btn_hide.TextImageRelation = TextImageRelation.ImageAboveText;
             btn_hide.UseVisualStyleBackColor = true;
+            btn_hide.Click += btn_hide_Click;
             // 
             // btn_unhide
             // 
@@ -65,6 +66,7 @@
             btn_unhide.TextAlign = ContentAlignment.BottomCenter;
             btn_unhide.TextImageRelation = TextImageRelation.ImageAboveText;
             btn_unhide.UseVisualStyleBackColor = true;
+            btn_unhide.Click += btn_unhide_Click;
             // 
             // panel_separator
             // 
@@ -100,6 +102,7 @@
             btn_deleteProfile.TextAlign = ContentAlignment.BottomCenter;
             btn_deleteProfile.TextImageRelation = TextImageRelation.ImageAboveText;
             btn_deleteProfile.UseVisualStyleBackColor = true;
+            btn_deleteProfile.Click += btn_deleteProfile_Click;
             // 
             // btn_forgotPassword
             // 
@@ -113,6 +116,7 @@
             btn_forgotPassword.TextAlign = ContentAlignment.BottomCenter;
             btn_forgotPassword.TextImageRelation = TextImageRelation.ImageAboveText;
             btn_forgotPassword.UseVisualStyleBackColor = true;
+            btn_forgotPassword.Click += btn_forgotPassword_Click;
             // 
             // logo_guardx
             // 

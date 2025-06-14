@@ -13,11 +13,13 @@ namespace GuardX
         private readonly IIdentificationFileService _identificationFileService;
         private readonly IRegistryServices _registryServices;
         private readonly IServiceProvider _serviceProvider;
-        public Gx_HomeForm(IServiceProvider serviceProvider, IIdentificationFileService identificationService, IRegistryServices registryServices)
+        private readonly IVisibilityService _visibilityService;
+        public Gx_HomeForm(IServiceProvider serviceProvider, IIdentificationFileService identificationService, IRegistryServices registryServices, IVisibilityService visibilityService)
         {
             _serviceProvider = serviceProvider;
             _identificationFileService = identificationService;
             _registryServices = registryServices;
+            _visibilityService = visibilityService;
             InitializeComponent();
             init();
         }
@@ -36,7 +38,7 @@ namespace GuardX
                 }
                 else
                 {
-                    
+
                 }
             }
             EnableDisableUIControls();
@@ -78,7 +80,7 @@ namespace GuardX
                 DialogResult dialogResult = MessageBox.Show(Constants.APPLICATION_ERROR, Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 eResult = EResult.ERROR;
             }
-            else if(registryResults == ERegistryResults.UpdateRequired)
+            else if (registryResults == ERegistryResults.UpdateRequired)
             {
                 DialogResult dialogResult = MessageBox.Show(Constants.UPDATE_REGX_REQ, Constants.PROFILE_SETUP_REQ_TITLE, MessageBoxButtons.OK);
 
@@ -90,7 +92,7 @@ namespace GuardX
                 UpdateEnableActionFlag(EEnableAction.ForgotPwd, false);
             }
 
-            if(registryResults == ERegistryResults.AlreadyReg)
+            if (registryResults == ERegistryResults.AlreadyReg)
             {
                 //Check for Files Hidden or Not, based on that Disable the buttons. Also Disable ProfileSetup
                 UpdateEnableActionFlag(EEnableAction.ProfileSetup, false);
@@ -106,30 +108,25 @@ namespace GuardX
         {
             String currentDirectory = Directory.GetCurrentDirectory();
 
-            string[] files = Directory.GetFiles(currentDirectory);
+            bool bFilesHidden = true;
 
-            if(files.Length == 2)
+            foreach (var entity in Directory.EnumerateFileSystemEntries(currentDirectory))
             {
-                foreach(string file in files)
+                var fileName = Path.GetFileName(entity);
+                if (!fileName.Equals(Constants.APP_NAME_EXE) && !fileName.Equals(Constants.IDN_FILE_NAME))
                 {
-                    var fileName = Path.GetFileName(file);
-                    if(fileName.Equals(Constants.APP_NAME_EXE) || fileName.Equals(Constants.IDN_FILE_NAME))
+                    if ((File.GetAttributes(entity) & FileAttributes.Hidden) == 0)
                     {
-                        UpdateEnableActionFlag(EEnableAction.UnHideAction, true);
-                        UpdateEnableActionFlag(EEnableAction.HideAction, false);
-                    }
-                    else
-                    {
-                        UpdateEnableActionFlag(EEnableAction.ProfileSetup, false);
-                        UpdateEnableActionFlag(EEnableAction.HideAction, false);
-                        UpdateEnableActionFlag(EEnableAction.UnHideAction, false);
-                        UpdateEnableActionFlag(EEnableAction.DeleteProfile, false);
-                        UpdateEnableActionFlag(EEnableAction.ForgotPwd, false);
-
-                        MessageBox.Show(Constants.APPLICATION_ERROR, Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                        bFilesHidden = false;
+                        break;
                     }
                 }
+            }
+
+            if (bFilesHidden)
+            {
+                UpdateEnableActionFlag(EEnableAction.HideAction, false);
+                UpdateEnableActionFlag(EEnableAction.UnHideAction, true);
             }
             else
             {
@@ -207,8 +204,109 @@ namespace GuardX
 
         private void btn_profileSetup_Click(object sender, EventArgs e)
         {
-            var gx_ProfileSetupForm = _serviceProvider.GetRequiredService<Gx_ProfileSetupForm>();
-            gx_ProfileSetupForm.ShowDialog();
+            using (var gx_ProfileSetupForm = _serviceProvider.GetRequiredService<Gx_ProfileSetupForm>())
+            {
+                gx_ProfileSetupForm.ShowDialog();
+
+                if (gx_ProfileSetupForm.DialogResult == DialogResult.OK)
+                {
+                    UpdateEnableActionFlag(EEnableAction.ProfileSetup, false);
+                    UpdateEnableActionFlag(EEnableAction.HideAction, true);
+                    UpdateEnableActionFlag(EEnableAction.UnHideAction, false);
+                    UpdateEnableActionFlag(EEnableAction.DeleteProfile, true);
+                    UpdateEnableActionFlag(EEnableAction.ForgotPwd, true);
+                    EnableDisableUIControls();
+                }
+            }
+        }
+
+        private void btn_hide_Click(object sender, EventArgs e)
+        {
+            using (var gx_PasswordInputForm = _serviceProvider.GetRequiredService<Gx_PasswordInputForm>())
+            {
+                gx_PasswordInputForm.ShowDialog();
+
+                if (gx_PasswordInputForm.DialogResult == DialogResult.OK)
+                {
+                    EResult eResult = _visibilityService.Hide();
+
+                    if (EResult.OK == eResult)
+                    {
+                        UpdateEnableActionFlag(EEnableAction.HideAction, false);
+                        UpdateEnableActionFlag(EEnableAction.UnHideAction, true);
+                        EnableDisableUIControls();
+                    }
+                }
+            }
+        }
+
+        private void btn_unhide_Click(object sender, EventArgs e)
+        {
+            using (var gx_PasswordInputForm = _serviceProvider.GetRequiredService<Gx_PasswordInputForm>())
+            {
+                gx_PasswordInputForm.ShowDialog();
+
+                if (gx_PasswordInputForm.DialogResult == DialogResult.OK)
+                {
+                    EResult eResult = _visibilityService.UnHide();
+                    if (EResult.OK == eResult)
+                    {
+                        UpdateEnableActionFlag(EEnableAction.HideAction, true);
+                        UpdateEnableActionFlag(EEnableAction.UnHideAction, false);
+                        EnableDisableUIControls();
+                    }
+                }
+            }
+        }
+
+        private void btn_deleteProfile_Click(object sender, EventArgs e)
+        {
+            using (var gx_PasswordInputForm = _serviceProvider.GetRequiredService<Gx_PasswordInputForm>())
+            {
+                gx_PasswordInputForm.ShowDialog();
+
+                if (gx_PasswordInputForm.DialogResult == DialogResult.OK)
+                {
+                    EResult eResult = _visibilityService.UnHide();
+                    if (EResult.OK == eResult)
+                    {
+                        _registryServices.DeleteDirectoryProfile();
+                        if (EResult.OK == eResult)
+                        {
+                            _identificationFileService.DeleteIDNFile();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void btn_forgotPassword_Click(object sender, EventArgs e)
+        {
+            using(var otpForm = _serviceProvider.GetRequiredService<Gx_OtpFrom>())
+            {
+                EResult eResult;
+                otpForm.init(_registryServices.GetProfileEmail());
+                
+                eResult = otpForm.GenerateOtpAndSendEmail(_registryServices.GetProfileName(),_registryServices.GetProfileEmail(),EEmailPurpose.ResetProfile);
+                
+                otpForm.ShowDialog();
+
+                if (otpForm.DialogResult == DialogResult.OK)
+                { 
+                    if (eResult == EResult.OK)
+                    {
+                        eResult = _visibilityService.UnHide();
+                        if (eResult == EResult.OK)
+                        {
+                            using (var profileSetUpForm = _serviceProvider.GetRequiredService<Gx_ProfileSetupForm>())
+                            {
+                                profileSetUpForm.SetUpForResetPassword();
+                                profileSetUpForm.ShowDialog();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -36,8 +36,18 @@ namespace GuardX.Common
         //UI Related Strings
         public static readonly string UPDATE_REGX_REQ = "Please setup your profile by clicking \"Profile Setup\" ";
         public static readonly string PROFILE_SETUP_REQ_TITLE = "Profile Setup Required";
-        public static readonly string FILL_ALL_FIELDS = "Please fill out all the fields to proceed.";
+        public static readonly string NAME_FIELD_EMPTY_ERROR = "Name field can\'t be empty.";
+        public static readonly string EMAIL_FIELD_EMPTY_ERROR = "Email field can\'t be empty.";
+        public static readonly string PWD_FIELD_EMPTY_ERROR = "Password field can\'t be empty.";
+        public static readonly string OTP_FIELD_EMPTY_ERROR = "OTP field can\'t be empty.";
+        public static readonly string SENTENCE_FIELD_EMPTY_ERROR = "Unique Sentence field can\'t be empty.";
+        public static readonly string EMAIL_NOT_VERIFIED_ERROR = "Email is not verified";
         public static readonly string INITIALIZATION_VECTOR = "IV";
+        public static readonly string INVALID_PASSWORD = "Password is invalid";
+        public static readonly string INVALID_OTP = "OTP is invalid";
+        public static readonly string OTP_EMAIL_SUBJECT = "OTP Verification from GuardX";
+        public static readonly string EMAIL_PURPOSE_SETUP_PROFILE = "Setup your profile";
+        public static readonly string EMAIL_PURPOSE_RESET_PROFILE = "Reset your profile";
 
     }
 }
