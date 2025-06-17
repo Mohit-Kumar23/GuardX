@@ -11,17 +11,21 @@ using System.Windows.Forms;
 using GuardX.Common;
 using GuardX.Enums;
 using GuardX.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace GuardX.UI
 {
     public partial class Gx_OtpFrom : Form
     {
         private readonly IEmailService _emailService;
+        private readonly ILogger<Gx_OtpFrom> _logger;
         private int otpValue = 0;
 
-        public Gx_OtpFrom(IEmailService emailService)
+        public Gx_OtpFrom(IEmailService emailService,ILogger<Gx_OtpFrom> logger)
         {
             _emailService = emailService;
+            _logger = logger;
+
             this.DialogResult = DialogResult.Cancel;
             InitializeComponent();
         }

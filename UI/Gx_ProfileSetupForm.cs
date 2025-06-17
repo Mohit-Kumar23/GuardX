@@ -11,6 +11,7 @@ using GuardX.Common;
 using GuardX.Enums;
 using GuardX.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace GuardX.UI
 {
@@ -18,11 +19,14 @@ namespace GuardX.UI
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IRegistryServices _registryServices;
+        private readonly ILogger<Gx_ProfileSetupForm> _logger;
+
         private bool emailVerified = false;
-        public Gx_ProfileSetupForm(IServiceProvider serviceProvider, IRegistryServices registryServices)
+        public Gx_ProfileSetupForm(IServiceProvider serviceProvider, IRegistryServices registryServices,ILogger<Gx_ProfileSetupForm> logger)
         {
             _serviceProvider = serviceProvider;
             _registryServices = registryServices;
+            _logger = logger;
 
             InitializeComponent();
             FillProfileViews();

@@ -6,11 +6,17 @@ using System.Threading.Tasks;
 using GuardX.Common;
 using GuardX.Enums;
 using GuardX.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace GuardX.BLServices
 {
     public class GxVisibilityService : IVisibilityService
     {
+        private readonly ILogger<GxVisibilityService> _logger;
+        public GxVisibilityService(ILogger<GxVisibilityService> logger) 
+        { 
+            _logger = logger;
+        }
         public EResult Hide()
         {
             EResult eResult = EResult.OK;

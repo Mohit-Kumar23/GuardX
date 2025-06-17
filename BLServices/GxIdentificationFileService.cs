@@ -11,15 +11,19 @@ using GuardX.Common;
 using GuardX.Enums;
 using GuardX.Interfaces;
 using GuardX.Model;
+using Microsoft.Extensions.Logging;
 
 namespace GuardX.BLServices
 {
     internal class GxIdentificationFileService : IIdentificationFileService
     {
-       private readonly IIDNConfigService _idnConfigService;
-       public GxIdentificationFileService(IIDNConfigService idnConfigService)
+        private readonly IIDNConfigService _idnConfigService;
+        private readonly ILogger<GxIdentificationFileService> _logger;
+
+        public GxIdentificationFileService(IIDNConfigService idnConfigService,ILogger<GxIdentificationFileService> logger)
         {
             _idnConfigService = idnConfigService;
+            _logger = logger;
         }
 
         public EResult DeleteIDNFile()
@@ -63,9 +67,9 @@ namespace GuardX.BLServices
                     {
                         result = MessageBox.Show(String.Format(Constants.FILE_NON_VALID_FORMAT_MESSAGE, Constants.IDN_FILE_NAME), Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    else if(EIDNFileResults.CreationTimeEditedError == eResult)
+                    else if (EIDNFileResults.CreationTimeEditedError == eResult)
                     {
-                        result = MessageBox.Show(String.Format(Constants.FILE_CREATION_TIME_EDITED_ERROR, Constants.IDN_FILE_NAME), Constants.ERROR, MessageBoxButtons.OK,MessageBoxIcon.Error);
+                        result = MessageBox.Show(String.Format(Constants.FILE_CREATION_TIME_EDITED_ERROR, Constants.IDN_FILE_NAME), Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     else
                     {
@@ -88,5 +92,5 @@ namespace GuardX.BLServices
         }
     }
 
-    
+
 }

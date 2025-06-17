@@ -4,6 +4,7 @@ using GuardX.Enums;
 using GuardX.Interfaces;
 using GuardX.UI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace GuardX
 {
@@ -14,12 +15,15 @@ namespace GuardX
         private readonly IRegistryServices _registryServices;
         private readonly IServiceProvider _serviceProvider;
         private readonly IVisibilityService _visibilityService;
-        public Gx_HomeForm(IServiceProvider serviceProvider, IIdentificationFileService identificationService, IRegistryServices registryServices, IVisibilityService visibilityService)
+        private readonly ILogger<Gx_HomeForm> _logger;
+        public Gx_HomeForm(IServiceProvider serviceProvider, IIdentificationFileService identificationService, IRegistryServices registryServices, IVisibilityService visibilityService, ILogger<Gx_HomeForm> logger)
         {
             _serviceProvider = serviceProvider;
             _identificationFileService = identificationService;
             _registryServices = registryServices;
             _visibilityService = visibilityService;
+            _logger = logger;
+
             InitializeComponent();
             init();
         }

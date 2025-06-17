@@ -10,15 +10,19 @@ using System.Windows.Forms;
 using GuardX.Common;
 using GuardX.Enums;
 using GuardX.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace GuardX.UI
 {
     public partial class Gx_PasswordInputForm : Form
     {
         private readonly IRegistryServices _registryServices;
-        public Gx_PasswordInputForm(IRegistryServices registryServices)
+        private readonly ILogger<Gx_PasswordInputForm>  _logger;
+        public Gx_PasswordInputForm(IRegistryServices registryServices, ILogger<Gx_PasswordInputForm> logger)
         {
             _registryServices = registryServices;
+            _logger = logger;
+
             InitializeComponent();
             this.DialogResult = DialogResult.Cancel;
         }

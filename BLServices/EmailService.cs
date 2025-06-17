@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using GuardX.Common;
 using GuardX.Enums;
 using GuardX.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace GuardX.BLServices
 {
@@ -19,12 +20,14 @@ namespace GuardX.BLServices
         private readonly int _smtpPort;
         private readonly string _smtpMail;
         private readonly string _smtpPassword;
-
+        
+        private readonly ILogger<EmailService> _logger;
         private readonly IRegistryServices _registryServices;
 
-        public EmailService(IRegistryServices registryServices)
+        public EmailService(IRegistryServices registryServices,ILogger<EmailService> logger)
         {
             _registryServices = registryServices;
+            _logger = logger;
 
             _smtpHost = ConfigurationManager.AppSettings["YahooSmtpHost"];
             _smtpPort = Convert.ToInt32(ConfigurationManager.AppSettings["YahooSmtpPort"]);

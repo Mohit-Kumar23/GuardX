@@ -10,15 +10,19 @@ using GuardX.Common;
 using GuardX.Enums;
 using GuardX.Interfaces;
 using GuardX.Model;
+using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace GuardX.BLServices
 {
     internal class IDNConfigService : IIDNConfigService
     {
         private IDNConfig idnConfig;
+        private readonly ILogger<IDNConfigService> _logger;
 
-        public IDNConfigService()
+        public IDNConfigService(ILogger<IDNConfigService> logger)
         {
+            _logger = logger;
             idnConfig = new IDNConfig();
         }
         public EResult CreateIDNFile(string filePath)

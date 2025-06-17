@@ -2,6 +2,7 @@
 using GuardX.Enums;
 using GuardX.Helper;
 using GuardX.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
 
@@ -10,14 +11,17 @@ namespace GuardX.BLServices
     internal class GxRegistryServices : IRegistryServices
     {
         private readonly IIDNConfigService _idnConfigService;
+        private readonly ILogger<GxRegistryServices> _logger;
+
         private const string BASE_KEY_PATH = "SOFTWARE";
         private readonly RegistryKey baseKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
         private RegistryKey applicationSubKey;
         private RegistryKey generalApplicationSubKey;
 
-        public GxRegistryServices(IIDNConfigService idnConfigService)
+        public GxRegistryServices(IIDNConfigService idnConfigService,ILogger<GxRegistryServices> logger)
         {
             _idnConfigService = idnConfigService;
+            _logger = logger;
         }
 
         public ERegistryResults CheckApplicationRegistryAndUniqueness()

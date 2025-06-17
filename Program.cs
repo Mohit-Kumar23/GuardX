@@ -2,6 +2,8 @@ using GuardX.BLServices;
 using GuardX.Interfaces;
 using GuardX.UI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 namespace GuardX
 {
@@ -26,6 +28,15 @@ namespace GuardX
 
         private static void ConfiguerServices(IServiceCollection services)
         {
+            //Configure Logging
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders();
+                loggingBuilder.SetMinimumLevel(LogLevel.Information);
+                loggingBuilder.AddNLog();
+            });
+
+
             //Singleton services
             services.AddSingleton<IIDNConfigService,IDNConfigService>();
 

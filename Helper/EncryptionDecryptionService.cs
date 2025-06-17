@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using NLog;
 
 namespace GuardX.Helper
 {
     public class EncryptionDecryptionService
     {
+        //Logger
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         //Initialization Vector should always be same for encryption and decryption process.
         private static byte[] IV;
         public static string Encrypt(String profileUniqueText, String profilePwd)
