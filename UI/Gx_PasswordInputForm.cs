@@ -16,6 +16,7 @@ namespace GuardX.UI
 {
     public partial class Gx_PasswordInputForm : Form
     {
+        //Injection of Services
         private readonly IRegistryServices _registryServices;
         private readonly ILogger<Gx_PasswordInputForm>  _logger;
         public Gx_PasswordInputForm(IRegistryServices registryServices, ILogger<Gx_PasswordInputForm> logger)
@@ -27,6 +28,11 @@ namespace GuardX.UI
             this.DialogResult = DialogResult.Cancel;
         }
 
+        /// <summary>
+        /// Show/Hide the Password.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_show_hidePassword_Click(object sender, EventArgs e)
         {
             if (!String.IsNullOrEmpty(txt_password.Text)) 
@@ -42,6 +48,11 @@ namespace GuardX.UI
             }
         }
 
+        /// <summary>
+        /// Validate the entered password 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_submit_Click(object sender, EventArgs e)
         {
             if(!String.IsNullOrEmpty(txt_password.Text))

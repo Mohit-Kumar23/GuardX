@@ -17,6 +17,7 @@ namespace GuardX.BLServices
 {
     internal class GxIdentificationFileService : IIdentificationFileService
     {
+        //Injection of Services
         private readonly IIDNConfigService _idnConfigService;
         private readonly ILogger<GxIdentificationFileService> _logger;
 
@@ -26,6 +27,10 @@ namespace GuardX.BLServices
             _logger = logger;
         }
 
+        /// <summary>
+        /// Delete the guardx_config.idn file
+        /// </summary>
+        /// <returns></returns>
         public EResult DeleteIDNFile()
         {
             string currentPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -33,19 +38,25 @@ namespace GuardX.BLServices
             return _idnConfigService.DeleteIDNConfigFile(filePath);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public bool IsIDNFilePresentOrFormatted()
         {
             bool bRetVal = false;
+            //Gets the current path where from where exe is executed
             string currentPath = AppDomain.CurrentDomain.BaseDirectory;
             string filePath = currentPath + "\\" + Constants.IDN_FILE_NAME;
 
+            //Check if file exist or not.
             if (!File.Exists(filePath))
             {
                 EResult result = _idnConfigService.CreateIDNFile(filePath);
 
                 if (result == EResult.OK)
                 {
-                    DialogResult dialogResult = MessageBox.Show(/*String.Format(Constants.FILE_CREATED_MESSAGE, Constants.IDN_FILE_NAME)*/currentPath, Constants.FILE_CREATED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult dialogResult = MessageBox.Show(String.Format(Constants.FILE_CREATED_MESSAGE, Constants.IDN_FILE_NAME), Constants.FILE_CREATED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     if (dialogResult == DialogResult.OK || dialogResult == DialogResult.Cancel)
                     {
                         Environment.Exit(0);
@@ -53,9 +64,10 @@ namespace GuardX.BLServices
                 }
                 else if (result == EResult.ERROR)
                 {
-                    //TODO: On Error, show some message
+                    _logger.LogError("Error during IDN file creation.");
                 }
             }
+            //Check the format if file is in correct format.
             else
             {
                 EIDNFileResults eResult = _idnConfigService.IsValidFormat(filePath);

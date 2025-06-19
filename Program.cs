@@ -1,8 +1,12 @@
+using System.Reflection;
+using System.Xml;
 using GuardX.BLServices;
 using GuardX.Interfaces;
 using GuardX.UI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog.Config;
+using NLog;
 using NLog.Extensions.Logging;
 
 namespace GuardX
@@ -20,6 +24,17 @@ namespace GuardX
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
+            //As this exe is a single-release, self-contained, non-extracting files type of executable.
+            //We require to read the resources from the embedded files. All resource files are embedded within exe
+            //And to read those files from exe require using GetManifestResourceStream() that helps to read the embedded files.
+
+            //Following code is writted to read the NLog.config file as by default it is expected that NLog.config file 
+            //will be present from the exe executing location which is default in our case. So, we require special code
+            //to read those files and code accordingly.
+            var assembly = Assembly.GetExecutingAssembly();
+            using var stream = assembly.GetManifestResourceStream("GuardX.NLog.config");
+            LogManager.Configuration = new XmlLoggingConfiguration(XmlReader.Create(stream), null);
+
             var serviceCollections = new ServiceCollection();
             ConfiguerServices(serviceCollections);
             serviceProvider = serviceCollections.BuildServiceProvider();
@@ -32,7 +47,7 @@ namespace GuardX
             services.AddLogging(loggingBuilder =>
             {
                 loggingBuilder.ClearProviders();
-                loggingBuilder.SetMinimumLevel(LogLevel.Information);
+                loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
                 loggingBuilder.AddNLog();
             });
 

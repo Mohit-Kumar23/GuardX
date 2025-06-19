@@ -10,7 +10,10 @@ namespace GuardX
 {
     public partial class Gx_HomeForm : Form
     {
+        //Enabling/Disabling Flags for UI Components
         private EEnableAction enableActionsFlag = EEnableAction.DisableAll;
+        
+        //Injected Services
         private readonly IIdentificationFileService _identificationFileService;
         private readonly IRegistryServices _registryServices;
         private readonly IServiceProvider _serviceProvider;
@@ -30,35 +33,43 @@ namespace GuardX
 
         private void init()
         {
+            //Check if IDN file is present and in correct format
             bool bIDNCorrect = _identificationFileService.IsIDNFilePresentOrFormatted();
 
             if (bIDNCorrect)
             {
+                //Proceed to check the registry if IDN file is present and in correct format
                 EResult eResult = CheckRegistry();
+
 
                 if (eResult == EResult.ERROR)
                 {
+                    //Close application if registry is not in correct format.
                     Environment.Exit(0);
-                }
-                else
-                {
-
                 }
             }
             EnableDisableUIControls();
         }
 
+        /// <summary>
+        /// To Check the status of application profile in the registry
+        /// </summary>
+        /// <returns>
+        /// EResult
+        /// </returns>
         private EResult CheckRegistry()
         {
             EResult eResult = EResult.OK;
 
             ERegistryResults registryResults = _registryServices.CheckApplicationRegistryAndUniqueness();
 
+            //If Non-unique name then show message box
             if (registryResults == ERegistryResults.NonUniqueName)
             {
                 DialogResult result = MessageBox.Show(String.Format(Constants.INVALID_UNIQUE_NAME, Constants.IDN_FILE_NAME), Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 eResult = EResult.ERROR;
             }
+            //If registration is required then register the application with basic information
             else if (registryResults == ERegistryResults.RegRequired)
             {
                 EResult result = _registryServices.RegisterApplication();
@@ -79,11 +90,13 @@ namespace GuardX
                 }
 
             }
+            //If the format is not correct then throw error.
             else if (registryResults == ERegistryResults.InvalidFormat)
             {
                 DialogResult dialogResult = MessageBox.Show(Constants.APPLICATION_ERROR, Constants.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 eResult = EResult.ERROR;
             }
+            //If update in registry is required then show the message box and Enable/Disable the necessary UI components.
             else if (registryResults == ERegistryResults.UpdateRequired)
             {
                 DialogResult dialogResult = MessageBox.Show(Constants.UPDATE_REGX_REQ, Constants.PROFILE_SETUP_REQ_TITLE, MessageBoxButtons.OK);
@@ -96,6 +109,7 @@ namespace GuardX
                 UpdateEnableActionFlag(EEnableAction.ForgotPwd, false);
             }
 
+            //If already registered, then enable/disable the necessary UI components.
             if (registryResults == ERegistryResults.AlreadyReg)
             {
                 //Check for Files Hidden or Not, based on that Disable the buttons. Also Disable ProfileSetup
@@ -108,6 +122,9 @@ namespace GuardX
             return eResult;
         }
 
+        /// <summary>
+        /// Check if the Files except the GuardX.exe, guardx_congif.idn and guardX_log files are hidden or visible and enable the UI components accordingly.
+        /// </summary>
         public void SetHiddenOrUnhiddenFlagAsPerFileVisibility()
         {
             String currentDirectory = Directory.GetCurrentDirectory();
@@ -117,7 +134,8 @@ namespace GuardX
             foreach (var entity in Directory.EnumerateFileSystemEntries(currentDirectory))
             {
                 var fileName = Path.GetFileName(entity);
-                if (!fileName.Equals(Constants.APP_NAME_EXE) && !fileName.Equals(Constants.IDN_FILE_NAME))
+                if (!fileName.Equals(Constants.APP_NAME_EXE) && !fileName.Equals(Constants.IDN_FILE_NAME)
+                    && !fileName.Contains(Constants.GUARDX_LOG_SUBSTRING))
                 {
                     if ((File.GetAttributes(entity) & FileAttributes.Hidden) == 0)
                     {
@@ -140,6 +158,11 @@ namespace GuardX
 
         }
 
+        /// <summary>
+        /// Update the UI Flag
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="bCalledToEnable"></param>
         private void UpdateEnableActionFlag(EEnableAction flag, bool bCalledToEnable)
         {
             if (bCalledToEnable)
@@ -151,6 +174,10 @@ namespace GuardX
                 enableActionsFlag &= ~flag;
             }
         }
+
+        /// <summary>
+        /// Enable/Disable the UI Components based on Flag
+        /// </summary>
         private void EnableDisableUIControls()
         {
             if (enableActionsFlag != EEnableAction.DisableAll)
@@ -206,6 +233,11 @@ namespace GuardX
             }
         }
 
+        /// <summary>
+        /// Opens the Profile Setup form on ProfileSetup Button click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_profileSetup_Click(object sender, EventArgs e)
         {
             using (var gx_ProfileSetupForm = _serviceProvider.GetRequiredService<Gx_ProfileSetupForm>())
@@ -214,6 +246,7 @@ namespace GuardX
 
                 if (gx_ProfileSetupForm.DialogResult == DialogResult.OK)
                 {
+                    //Enable only Hide, Delete Profile and Forgot Password button
                     UpdateEnableActionFlag(EEnableAction.ProfileSetup, false);
                     UpdateEnableActionFlag(EEnableAction.HideAction, true);
                     UpdateEnableActionFlag(EEnableAction.UnHideAction, false);
@@ -224,6 +257,11 @@ namespace GuardX
             }
         }
 
+        /// <summary>
+        /// Verify Password and Hides the files and directories and update the UI flags accordingly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_hide_Click(object sender, EventArgs e)
         {
             using (var gx_PasswordInputForm = _serviceProvider.GetRequiredService<Gx_PasswordInputForm>())
@@ -244,6 +282,11 @@ namespace GuardX
             }
         }
 
+        /// <summary>
+        /// Verify Password and UnHides the files and directories and update the UI flags accordingly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_unhide_Click(object sender, EventArgs e)
         {
             using (var gx_PasswordInputForm = _serviceProvider.GetRequiredService<Gx_PasswordInputForm>())
@@ -263,6 +306,12 @@ namespace GuardX
             }
         }
 
+        /// <summary>
+        /// Delete the profiles
+        /// Verify the Password->Unhide all the files->Delete the Profile from Registry->Delete the IDN File.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_deleteProfile_Click(object sender, EventArgs e)
         {
             using (var gx_PasswordInputForm = _serviceProvider.GetRequiredService<Gx_PasswordInputForm>())
@@ -274,7 +323,7 @@ namespace GuardX
                     EResult eResult = _visibilityService.UnHide();
                     if (EResult.OK == eResult)
                     {
-                        _registryServices.DeleteDirectoryProfile();
+                        _registryServices.DeleteRegistryProfile();
                         if (EResult.OK == eResult)
                         {
                             _identificationFileService.DeleteIDNFile();
@@ -284,6 +333,12 @@ namespace GuardX
             }
         }
 
+        /// <summary>
+        /// Opens the OTP form to reset the profile.
+        /// Verify the OTP, Unhide the files and Open the Profile setup form for password reset.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_forgotPassword_Click(object sender, EventArgs e)
         {
             using(var otpForm = _serviceProvider.GetRequiredService<Gx_OtpFrom>())
@@ -291,6 +346,7 @@ namespace GuardX
                 EResult eResult;
                 otpForm.init(_registryServices.GetProfileEmail());
                 
+                //Send OTP Email
                 eResult = otpForm.GenerateOtpAndSendEmail(_registryServices.GetProfileName(),_registryServices.GetProfileEmail(),EEmailPurpose.ResetProfile);
                 
                 otpForm.ShowDialog();
@@ -299,11 +355,13 @@ namespace GuardX
                 { 
                     if (eResult == EResult.OK)
                     {
+                        //Unhide the Files and Directories
                         eResult = _visibilityService.UnHide();
                         if (eResult == EResult.OK)
                         {
                             using (var profileSetUpForm = _serviceProvider.GetRequiredService<Gx_ProfileSetupForm>())
                             {
+                                //Open Profile Form to reset password.
                                 profileSetUpForm.SetUpForResetPassword();
                                 profileSetUpForm.ShowDialog();
                             }

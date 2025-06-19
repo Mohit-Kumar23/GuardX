@@ -17,6 +17,7 @@ namespace GuardX.UI
 {
     public partial class Gx_OtpFrom : Form
     {
+        //Injection of Services
         private readonly IEmailService _emailService;
         private readonly ILogger<Gx_OtpFrom> _logger;
         private int otpValue = 0;
@@ -35,6 +36,15 @@ namespace GuardX.UI
             lblForEmail.Text = lblForEmail.Text + email;
         }
 
+        /// <summary>
+        /// Generate a random number of 6 digit and send it for OTP.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="email"></param>
+        /// <param name="eEmailPurpose"></param>
+        /// <returns>
+        /// EResult
+        /// </returns>
         public EResult GenerateOtpAndSendEmail(String userName, String email,EEmailPurpose eEmailPurpose)
         {
             EResult result = EResult.OK;
@@ -42,11 +52,17 @@ namespace GuardX.UI
             Random random = new Random();
             otpValue = random.Next(100000, 1000000);
 
+            //Send Email for OTP verification
             result = _emailService.SendOtpEmail(userName,email,otpValue, eEmailPurpose);
 
             return result;
         }
 
+        /// <summary>
+        /// Show/Hide the OTP value
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_show_hide_otp_Click(object sender, EventArgs e)
         {
             if (!String.IsNullOrEmpty(mskTxtOtp.Text))
@@ -62,6 +78,11 @@ namespace GuardX.UI
             }
         }
 
+        /// <summary>
+        /// Check if the entered OTP is same as OTP generated.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_verify_Click(object sender, EventArgs e)
         {
             if(!String.IsNullOrEmpty(mskTxtOtp.Text))

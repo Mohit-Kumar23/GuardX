@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using GuardX.Common;
+﻿using GuardX.Common;
 using GuardX.Enums;
 using GuardX.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +8,7 @@ namespace GuardX.UI
 {
     public partial class Gx_ProfileSetupForm : Form
     {
+        //Injection of services
         private readonly IServiceProvider _serviceProvider;
         private readonly IRegistryServices _registryServices;
         private readonly ILogger<Gx_ProfileSetupForm> _logger;
@@ -32,6 +24,9 @@ namespace GuardX.UI
             FillProfileViews();
         }
 
+        /// <summary>
+        /// If General Profile is already registered then fill the Name and Email and then disable it for editing.
+        /// </summary>
         private void FillProfileViews()
         {
             bool bResult = _registryServices.IsProfileCreated();
@@ -46,8 +41,14 @@ namespace GuardX.UI
             }
         }
 
+        /// <summary>
+        /// Proceed to check the UI components value and update the registry.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_save_click(object sender, EventArgs e)
         {
+            //When all the fields are not empty then proceed to update the registry.
             if (!String.IsNullOrEmpty(txtBx_name.Text) && !String.IsNullOrEmpty(txtBx_email.Text)
                 && !String.IsNullOrEmpty(txtBx_pwd.Text) && !String.IsNullOrEmpty(txtBx_uniqueText.Text))
             {
@@ -81,6 +82,7 @@ namespace GuardX.UI
                     errorProvider.SetError(txtBx_email, Constants.EMAIL_NOT_VERIFIED_ERROR);
                 }
             }
+            //Set the error provider for the UI components which are blank.
             else
             {
                 if (String.IsNullOrEmpty(txtBx_name.Text))
@@ -118,18 +120,30 @@ namespace GuardX.UI
             }
         }
 
+        /// <summary>
+        /// Close the dialog
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_cancel_click(object sender, EventArgs e)
         {
             Close();
         }
 
+        /// <summary>
+        /// Open the Otp Form if email is verified.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_verify_click(object sender,EventArgs e)
         {
-            if(!String.IsNullOrEmpty(txtBx_email.Text))
+            //If email is not blank then proceed to open the OTP form.
+            if(!String.IsNullOrEmpty(txtBx_email.Text) && !String.IsNullOrEmpty(txtBx_name.Text))
             {
                 errorProvider.SetError(txtBx_email, "");
                 EResult eResult = EResult.OK;
 
+                //Open the Gx_OtpForm
                 using (var otpFrom = _serviceProvider.GetRequiredService<Gx_OtpFrom>())
                 {
                     otpFrom.init(txtBx_email.Text);
@@ -146,7 +160,7 @@ namespace GuardX.UI
                         eResult = EResult.ERROR;
                     }
                 }
-
+                //If email is verified then change button color and disable it.
                 if (EResult.OK == eResult)
                 {
                     btn_verify.Text = "Verified!";
@@ -155,12 +169,24 @@ namespace GuardX.UI
                     emailVerified = true;
                 }
             }
+            //Set error provider if email or name is blank.
             else
             {
-                errorProvider.SetError(txtBx_email,Constants.EMAIL_FIELD_EMPTY_ERROR);
+                if(String.IsNullOrEmpty(txtBx_email.Text))
+                    errorProvider.SetError(txtBx_email,Constants.EMAIL_FIELD_EMPTY_ERROR);
+                else
+                    errorProvider.SetError(txtBx_email,"");
+
+                if(String.IsNullOrEmpty(txtBx_name.Text))
+                    errorProvider.SetError(txtBx_name,Constants.NAME_FIELD_EMPTY_ERROR);
+                else
+                    errorProvider.SetError(txtBx_name, "");
             }           
         }
 
+        /// <summary>
+        /// Fill and Disable the Name, Email and Unique Sentence UI Components for Forgot password process.
+        /// </summary>
         public void SetUpForResetPassword()
         {
             this.txtBx_name.Text = _registryServices.GetProfileName();

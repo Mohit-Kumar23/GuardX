@@ -11,10 +11,19 @@ namespace GuardX.Helper
     public class EncryptionDecryptionService
     {
         //Logger
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         //Initialization Vector should always be same for encryption and decryption process.
         private static byte[] IV;
+
+        /// <summary>
+        /// Encrypt the Protected Text with the Profile Password using AES-128 encryption alogrithm.
+        /// </summary>
+        /// <param name="profileUniqueText"></param>
+        /// <param name="profilePwd"></param>
+        /// <returns>
+        /// Cipher Text
+        /// </returns>
         public static string Encrypt(String profileUniqueText, String profilePwd)
         {
             string cipherText = String.Empty;
@@ -24,6 +33,7 @@ namespace GuardX.Helper
                 //Default AES-128 Initialization
                 using (Aes aes = Aes.Create())
                 {
+                    //Pad Key to expand it to 16byte long.
                     aes.Key = Encoding.UTF8.GetBytes(profilePwd.PadRight(16, '0'));
                     aes.IV = IV;
 
@@ -52,12 +62,18 @@ namespace GuardX.Helper
             }
             catch (Exception ex)
             {
-                //TODO: Log Here
+                _logger.Error($"ENCRYPTION_FAILED_#_Message:{ex.Message}_#_StackTrace:{ex.StackTrace}");
             }
 
             return cipherText;
         }
 
+        /// <summary>
+        /// Decrypt the Cipher Text with the User Input Password using AES-128 decryption alogrithm.
+        /// </summary>
+        /// <param name="cipherText"></param>
+        /// <param name="profilePwd"></param>
+        /// <returns></returns>
         public static string Decrypt(String cipherText,String profilePwd)
         {
             string plainText = String.Empty;
@@ -93,11 +109,15 @@ namespace GuardX.Helper
             }
             catch(Exception ex)
             {
-                //TODO: Log Here
+                _logger.Error($"DECRYPTION_FAILED_#_Message:{ex.Message}_#_StackTrace:{ex.StackTrace}");
             }
             return plainText;
         }
 
+        /// <summary>
+        /// Returns the static IV or generate new when running for first time.
+        /// </summary>
+        /// <returns></returns>
         public static byte[] GetIVForAES()
         {
             if(IV == null || IV.Length == 0)
@@ -109,6 +129,10 @@ namespace GuardX.Helper
             return IV;
         }
 
+        /// <summary>
+        /// Set the Initialization Vector to static variable
+        /// </summary>
+        /// <param name="iv"></param>
         public static void SetIVForAES(byte[] iv)
         {
             if(iv != null && iv.Length > 0)

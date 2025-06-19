@@ -25,7 +25,7 @@ namespace GuardX.Interfaces
 
         public EResult ValidatePassword(String password);
 
-        public EResult DeleteDirectoryProfile();
+        public EResult DeleteRegistryProfile();
 
         public String GetUniqueSentence();
 
