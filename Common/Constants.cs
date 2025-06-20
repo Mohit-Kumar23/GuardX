@@ -15,7 +15,7 @@ namespace GuardX.Common
         public static readonly string APP_NAME_EXE = "GuardX.exe";
         public static readonly string ERROR = "Error";
         public static readonly string CREATED_AT = "CreatedAt";
-        public static readonly string GUARDX_LOG_SUBSTRING = "Guard_log";
+        public static readonly string GUARDX_LOG_SUBSTRING = "GuardX_log";
         public static readonly string APPLICATION_ERROR = "Application ran into error. Please contact your developer.";
 
         //Registry Related Strings

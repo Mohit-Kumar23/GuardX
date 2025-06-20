@@ -326,7 +326,12 @@ namespace GuardX
                         _registryServices.DeleteRegistryProfile();
                         if (EResult.OK == eResult)
                         {
-                            _identificationFileService.DeleteIDNFile();
+                            eResult = _identificationFileService.DeleteIDNFile();
+                            if (EResult.OK == eResult)
+                            {
+                                Thread.Sleep(1500);
+                                Environment.Exit(0);
+                            }
                         }
                     }
                 }
@@ -359,6 +364,10 @@ namespace GuardX
                         eResult = _visibilityService.UnHide();
                         if (eResult == EResult.OK)
                         {
+                            UpdateEnableActionFlag(EEnableAction.HideAction, true);
+                            UpdateEnableActionFlag(EEnableAction.UnHideAction, false);
+                            EnableDisableUIControls();
+
                             using (var profileSetUpForm = _serviceProvider.GetRequiredService<Gx_ProfileSetupForm>())
                             {
                                 //Open Profile Form to reset password.

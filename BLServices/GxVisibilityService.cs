@@ -41,7 +41,8 @@ namespace GuardX.BLServices
                 foreach (string file in files)
                 {
                     if(!Path.GetFileName(file).Equals(Constants.APP_NAME_EXE) && 
-                       !Path.GetFileName(file).Equals(Constants.IDN_FILE_NAME))
+                       !Path.GetFileName(file).Equals(Constants.IDN_FILE_NAME) &&
+                       !Path.GetFileName(file).Contains(Constants.GUARDX_LOG_SUBSTRING))
                     {
                         File.SetAttributes(file, File.GetAttributes(file) | FileAttributes.Hidden | FileAttributes.System);
                     }
