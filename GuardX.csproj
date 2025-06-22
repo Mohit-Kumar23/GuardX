@@ -9,7 +9,7 @@
     <ApplicationIcon>GuardX_512x512.ico</ApplicationIcon>
 	<PublishSingleFile>true</PublishSingleFile>
 	<SelfContained>true</SelfContained>
-	<IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	<PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
